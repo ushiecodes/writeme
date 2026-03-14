@@ -316,3 +316,13 @@ def run_phase_three() -> dict:
     return answers
     
     
+def _ask_layer_prompt() -> str:
+    
+    print("\nYour README draft is ready and publishable as-is.")
+    print("\nTwo optional depth layers are available:")
+    print("  Layer 2 — usage guide, configuration reference, architecture")
+    print("  Layer 3 — security, deployment, changelog, contributing guide")
+    print("\nType 'more' for both, 'layer 2', 'layer 3', or 'done' to finish.")
+    response = input("> ").strip().lower()
+    return response
+    
