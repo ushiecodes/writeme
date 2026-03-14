@@ -380,3 +380,52 @@ def run_interview() -> dict:
     
     return all_answers
 
+def format_answers(answers: dict) -> str:
+    labels = {
+        
+        "q1": "Q1. Project description, target user, and problem solved",
+        "q2": "Q2. Full tech stack",
+        "q3": "Q3. Terminal session — clean setup to running app",
+        "q4": "Q4. Successful run output",
+        "q5": "Q5. Three common setup errors and fixes",
+        "q6": "Q6. Major features",
+        "q7": "Q7. Primary workflow",
+        "q8": "Q8. User roles and modes",
+        "q9": "Q9. Configuration options",
+        "q9b": "Q9b. Config loading mechanism",
+        "q10": "Q10. Sensitive config values and storage",
+        "q11": "Q11. Behaviour on missing required config",
+        "q12": "Q12. Project file tree",
+        "q13": "Q13. Folder responsibilities",
+        "q14": "Q14. Critical execution path",
+        "q15": "Q15. Component communication model",
+        "q16": "Q16. Non-obvious design decisions",
+        "q17": "Q17. Sensitive data handled",
+        "q18": "Q18. Auth model",
+        "q19": "Q19. Network exposure",
+        "q20": "Q20. .gitignore contents",
+        "q21": "Q21. Dependency audit output",
+        "q22": "Q22. Known security limitations",
+        "q23": "Q23. Deployment target",
+        "q24": "Q24. Containerisation and env differences",
+        "q25": "Q25. Production-specific setup steps",
+        "q26": "Q26. Git log",
+        "q27": "Q27. Contribution guidelines",
+        "q28": "Q28. Bug reporting and feature requests",
+        "q29": "Q29. Maintainer contact",
+        "q30": "Q30. License and attribution"
+    }
+
+    lines = ["DEVELOPER INTERVIEW ANSWERS\n"]
+    for key, label in labels.items():
+        if key in answers and key != "q21_skipped":
+            lines.append(f"[{label}]")
+            lines.append(answers[key] or "(not provided)")
+            lines.append("")
+            
+    if answers.get("q21_skipped"):
+        lines.append("[Q21. Dependency Audit]")
+        lines.append("SKIPPED - Insert warning block in security section")
+        lines.append("")
+    
+    return "\n".join(lines)
