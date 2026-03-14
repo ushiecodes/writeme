@@ -51,9 +51,8 @@ def run_phase_one() -> dict:
         lines.append(line)
     answers["q5"] = "\n".join(lines).strip()
 
-    print("\n" + "="*60)
     print("Phase 1 complete. Sending to Gemini...")
-    print("="*60 + "\n")
+
 
     return answers
 
@@ -181,12 +180,139 @@ def run_phase_two() -> dict:
         lines.append(line)
     answers["q16"] = "\n".join(lines).strip()
 
-    print("\n" + "="*60)
     print("Phase 2 complete.")
-    print("="*60 + "\n")
+
 
     return answers
     
 
 def run_phase_three() -> dict:
-    pass
+    
+    answers = {}
+    
+    print("PHASE 3 — Completion Layer")
+    print("Group A: Security")
+    
+        # Q17
+    print("Q17. What sensitive data does this project handle?")
+    print("     (passwords, tokens, PII, financial data, session state)")
+    answers["q17"] = input("> ").strip()
+
+    # Q18
+    print("\nQ18. Describe your authentication and authorisation model.")
+    print("     Who can do what, and how is it enforced in code?")
+    answers["q18"] = input("> ").strip()
+
+    # Q19
+    print("\nQ19. What is the network exposure?")
+    print("     (local only / LAN / internet-facing / behind auth proxy)")
+    answers["q19"] = input("> ").strip()
+
+    # Q20
+    print("\nQ20. Paste your .gitignore file in full.")
+    print("     Type END on a new line when done:")
+    lines = []
+    while True:
+        line = input()
+        if line.strip().upper() == "END":
+            break
+        lines.append(line)
+    answers["q20"] = "\n".join(lines).strip()
+
+    # Q21
+    print("\nQ21. Run the dependency audit for your stack and paste the output.")
+    print("     Python:  pip install pip-audit && pip-audit")
+    print("     Node:    npm audit")
+    print("     Rust:    cargo audit")
+    print("     If skipping, type SKIP — a warning block will be added to the README.")
+    lines = []
+    while True:
+        line = input()
+        if line.strip().upper() in ("END", "SKIP"):
+            answers["q21_skipped"] = line.strip().upper() == "SKIP"
+            break
+        lines.append(line)
+    answers["q21"] = "\n".join(lines).strip()
+
+    # Q22
+    print("\nQ22. What are the known security limitations or assumptions a deployer must understand?")
+    print("     Type END on a new line when done:")
+    lines = []
+    while True:
+        line = input()
+        if line.strip().upper() == "END":
+            break
+        lines.append(line)
+    answers["q22"] = "\n".join(lines).strip()
+
+    print("\n" + "="*60)
+    print("Group B: Deployment")
+    print("="*60 + "\n")
+
+    # Q23
+    print("Q23. What is the deployment target?")
+    print("     (local only / VPS / cloud VM / container / managed service / embedded / other)")
+    answers["q23"] = input("> ").strip()
+
+    # Q24
+    print("\nQ24. Is this containerised?")
+    print("     If yes, paste your Dockerfile or docker-compose.yml.")
+    print("     If no, describe every difference between local dev and production.")
+    print("     Type END on a new line when done:")
+    lines = []
+    while True:
+        line = input()
+        if line.strip().upper() == "END":
+            break
+        lines.append(line)
+    answers["q24"] = "\n".join(lines).strip()
+
+    # Q25
+    print("\nQ25. Are there any production-specific setup steps that differ from Phase 1?")
+    answers["q25"] = input("> ").strip()
+
+    print("\n" + "="*60)
+    print("Group C: Changelog and Maintenance")
+    print("="*60 + "\n")
+
+    # Q26
+    print("Q26. Run `git log --oneline -20` and paste the full output.")
+    print("     Type END on a new line when done:")
+    lines = []
+    while True:
+        line = input()
+        if line.strip().upper() == "END":
+            break
+        lines.append(line)
+    answers["q26"] = "\n".join(lines).strip()
+
+    # Q27
+    print("\nQ27. Is this project open to contributions?")
+    print("     If yes: branching strategy, PR process, linter/style config.")
+    print("     Type END on a new line when done:")
+    lines = []
+    while True:
+        line = input()
+        if line.strip().upper() == "END":
+            break
+        lines.append(line)
+    answers["q27"] = "\n".join(lines).strip()
+
+    # Q28
+    print("\nQ28. How should bugs be reported and features requested?")
+    answers["q28"] = input("> ").strip()
+
+    # Q29
+    print("\nQ29. Who maintains this project and how can they be reached?")
+    answers["q29"] = input("> ").strip()
+
+    # Q30
+    print("\nQ30. What license applies?")
+    print("     List any third-party code or assets requiring attribution.")
+    answers["q30"] = input("> ").strip()
+
+    print("Phase 3 complete.")
+
+    return answers
+    
+    
