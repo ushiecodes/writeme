@@ -326,3 +326,57 @@ def _ask_layer_prompt() -> str:
     response = input("> ").strip().lower()
     return response
     
+def _parse_layer_intent(response: str) -> list[str]:
+    depth_keywords = ["more", "both", "everything", "all", "complete ", "full"]
+    layer2_keywords = ["layer 2", "usage", "architecture", "config", "depth"]
+    layer3_keywords = ["layer 3", "security", "depl", "changelog", "contributing"]
+    
+    layers = []
+    if any(k in response for k in depth_keywords):
+        layers = ["layer2", "layer3"]
+    else:
+        if any(k in response for k in layer2_keywords):
+            layers.append("layer2")
+        if any(k in response for k in layer3_keywords):
+            layers.append("layer3")
+    
+    return layers
+
+def run_interview() -> dict:
+    all_answers = {}
+    
+    phase1 = run_phase_one()
+    all_answers.update(phase1)
+    
+    response = _ask_layer_prompt()
+    
+    if response == "done":
+        return all_answers
+
+    layers = _parse_layer_intent(response)
+    
+    if not layers:
+        print("Intent unclear. Do you want to add more depth to the README? or is the draft SUFFICIENT?")
+        clarification = input("> ").strip().lower()
+        
+        if "yes" in clarification or "more" in clarification or "depth" in clarification:
+            layers = ["layer2", "layer3"]
+        else:
+            return all_answers
+    
+    if "layer2" in layers:
+        phase2 = run_phase_two()
+        all_answers.update(phase2)
+        response = _ask_layer_prompt()
+        
+        if response != "done":
+            new_layers = _parse_layer_intent(response)
+            if "layer3" in new_layers:
+                layers.append("layer3")
+
+    if "layer3" in layers:
+        phase3 = run_phase_three()
+        all_answers.update(phase3)
+    
+    return all_answers
+
