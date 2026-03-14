@@ -56,5 +56,20 @@ def scan_codebase(root: str = ".") -> dict:
         "files": files
     }
 
+def format_codebase_for_prompt(scan_result: dict) -> str:
+    """
+    Converts scan result into a structured string to inject into the Gemini prompt.
+    """
+    lines = []
 
+    lines.append("=== PROJECT FILE TREE ===")
+    for path in scan_result["tree"]:
+        lines.append(f"  {path}")
+
+    lines.append("\n=== FILE CONTENTS ===")
+    for path, content in scan_result["files"].items():
+        lines.append(f"\n--- {path} ---")
+        lines.append(content)
+
+    return "\n".join(lines)
 
