@@ -402,6 +402,7 @@ def run_phase_three(all_answers: dict):
     print("     Node:    npm audit")
     print("     Rust:    cargo audit")
     print("     If skipping, type SKIP — a warning block will be added to the README.")
+    print("  (Type END on a new line to submit, SKIP to skip, TLDR for generic, QUIT to exit)")
     lines = []
     while True:
         line = input()
