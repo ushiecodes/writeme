@@ -1,9 +1,100 @@
 import os
 from pathlib import Path
 
-IGNORED_DIRS = {
-    ".git", ".venv", "venv", "env", "__pycache__", "node_modules",
-    ".mypy_cache", ".pytest_cache", "dist", "build", ".egg-info"
+IGNORED_FILES = {
+    # env files — all variants
+    ".env",
+    ".env.local",
+    ".env.development",
+    ".env.development.local",
+    ".env.test",
+    ".env.test.local",
+    ".env.production",
+    ".env.production.local",
+    ".env.staging",
+    ".env.staging.local",
+    ".env.example",  # sometimes contains real values despite the name
+    ".env.sample",
+    ".envrc",        # direnv
+
+    # secrets and credentials
+    "secrets.json",
+    "secrets.yaml",
+    "secrets.yml",
+    "credentials.json",
+    "credentials.yaml",
+    "credentials.yml",
+    "serviceaccount.json",
+    "service-account.json",
+
+    # cloud provider credentials
+    ".aws",
+    "config.ini",
+
+    # private keys and certs
+    "id_rsa",
+    "id_rsa.pub",
+    "id_ed25519",
+    "id_ed25519.pub",
+    "id_ecdsa",
+    "id_dsa",
+
+    # terraform
+    "terraform.tfvars",
+    "terraform.tfvars.json",
+    "override.tf",
+    "override.tf.json",
+
+    # docker
+    ".docker/config.json",
+
+    # database
+    ".pgpass",
+    "database.yml",   # Rails
+
+    # ruby
+    ".bundle/config",
+
+    # node / npm
+    ".npmrc",
+    ".yarnrc",
+    ".yarnrc.yml",
+
+    # python
+    "pip.conf",
+    "pip.ini",
+
+    # jetbrains / editors
+    "*.xml",          # IntelliJ workspace files sometimes contain tokens
+
+    # misc auth
+    ".netrc",
+    ".htpasswd",
+    "authinfo",
+    ".authinfo",
+    "token",
+    "token.json",
+    "oauth_token",
+}
+
+IGNORED_SUFFIXES = {
+    ".pem",
+    ".key",
+    ".cert",
+    ".crt",
+    ".cer",
+    ".p12",
+    ".pfx",
+    ".jks",     # Java KeyStore
+    ".keystore",
+    ".asc",     # GPG
+    ".gpg",
+    ".pgp",
+    ".ovpn",    # VPN config
+}
+
+IGNORED_PREFIXES = {
+    ".env",     # catches any .env* variant not explicitly listed above
 }
 
 IGNORED_EXTENSIONS = {
@@ -72,4 +163,3 @@ def format_codebase_for_prompt(scan_result: dict) -> str:
         lines.append(content)
 
     return "\n".join(lines)
-
