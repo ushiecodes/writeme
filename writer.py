@@ -26,3 +26,13 @@ def write_readme(content: str, directory: str = ".") -> None:
     else:
         readme_path.write_text(content, encoding="utf-8")
         print(f"\nREADME.md created at {readme_path.resolve()}")
+
+def _clean_output(text: str) -> str:
+    text = text.strip()
+    if text.startswith("```markdown"):
+        text = text[len("```markdown"):].strip()
+    if text.startswith("```"):
+        text = text[3:].strip()
+    if text.endswith("```"):
+        text = text[:-3].strip()
+    return text
