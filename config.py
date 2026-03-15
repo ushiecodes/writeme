@@ -11,3 +11,12 @@ def save_api_key(api_key: str) -> None:
     with open(CONFIG_FILE, "w") as f:
         json.dump({"api.key": api_key}, f)
 
+def load_api_key() -> str | None:
+    if CONFIG_FILE.exists():
+        with open(CONFIG_FILE) as f:
+            data = json.load(f)
+            return data.get("api_key")
+    
+    load_dotenv(dotenv_path=".env.local")
+    return os.getenv("API_KEY")
+
