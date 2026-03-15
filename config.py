@@ -28,3 +28,9 @@ def prompt_for_api_key() -> str:
     print("API Key Saved...\n")
     return api_key
 
+def get_api_key() -> str:
+    api_key = load_api_key()
+    if not api_key:
+        api_key = prompt_for_api_key()
+    return api_key
+
