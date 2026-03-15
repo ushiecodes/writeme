@@ -34,3 +34,9 @@ def get_api_key() -> str:
         api_key = prompt_for_api_key()
     return api_key
 
+def reset_api_key() -> None:
+    if CONFIG_FILE.exists():
+        CONFIG_FILE.unlink()
+        print("API Key was removed...")
+    else:
+        print("No saved API Key was found...")
