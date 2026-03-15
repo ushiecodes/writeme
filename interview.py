@@ -344,40 +344,46 @@ def _parse_layer_intent(response: str) -> list[str]:
 
 def run_interview() -> dict:
     all_answers = {}
-    
+
     phase1 = run_phase_one()
     all_answers.update(phase1)
-    
+
     response = _ask_layer_prompt()
-    
-    if response == "done":
+
+    # fix 1 — normalise before checking
+    if response.strip().lower() == "done":
         return all_answers
 
     layers = _parse_layer_intent(response)
-    
+
     if not layers:
-        print("Intent unclear. Do you want to add more depth to the README? or is the draft SUFFICIENT?")
+        print("Intent unclear. Do you want to add more depth to the README, or is the draft sufficient?")
         clarification = input("> ").strip().lower()
-        
-        if "yes" in clarification or "more" in clarification or "depth" in clarification:
+
+        # fix 2 — explicit done check here too
+        if clarification == "done" or "no" in clarification or "sufficient" in clarification:
+            return all_answers
+        elif "yes" in clarification or "more" in clarification or "depth" in clarification:
             layers = ["layer2", "layer3"]
         else:
             return all_answers
-    
+
     if "layer2" in layers:
         phase2 = run_phase_two()
         all_answers.update(phase2)
         response = _ask_layer_prompt()
-        
-        if response != "done":
-            new_layers = _parse_layer_intent(response)
-            if "layer3" in new_layers:
-                layers.append("layer3")
+
+        if response.strip().lower() == "done":
+            return all_answers
+
+        new_layers = _parse_layer_intent(response)
+        if "layer3" in new_layers:
+            layers.append("layer3")
 
     if "layer3" in layers:
         phase3 = run_phase_three()
         all_answers.update(phase3)
-    
+
     return all_answers
 
 def format_answers(answers: dict) -> str:
