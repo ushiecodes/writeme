@@ -7,7 +7,7 @@ from config import get_api_key, reset_api_key
 
 def main():
     parser = argparse.ArgumentParser(
-        prog="turtell", description="AI-powered README generator"
+        prog="writeme", description="AI-powered README generator"
     )
     parser.add_argument(
         "--reset", action="store_true", help="Reset your saved Gemini API key"
@@ -25,15 +25,15 @@ def main():
         try:
             from importlib.metadata import version
 
-            print(f"turtell v{version('turtell')}")
+            print(f"writeme v{version('writeme')}")
         except Exception:
-            print("turtell v0.1.0")
+            print("writeme v0.1.0")
         return
 
     # confirm API key exists before starting interview
     get_api_key()
 
-    print("\nWelcome to turtell — AI-powered README generator")
+    print("\nWelcome to WriteMe — AI-powered README generator")
     print("=" * 60)
     print("This tool will interview you about your project and")
     print("generate a complete README.md in the current directory.")
