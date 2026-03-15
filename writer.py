@@ -29,10 +29,28 @@ def write_readme(content: str, directory: str = ".") -> None:
 
 def _clean_output(text: str) -> str:
     text = text.strip()
+
+    # strip markdown code fences
     if text.startswith("```markdown"):
         text = text[len("```markdown"):].strip()
     if text.startswith("```"):
         text = text[3:].strip()
     if text.endswith("```"):
         text = text[:-3].strip()
+
+    # strip everything before the first markdown heading
+    # audit reports, preamble, and security questions appear before the README
+    heading_index = text.find("\n# ")
+    if heading_index != -1:
+        text = text[heading_index:].strip()
+    elif text.startswith("# "):
+        pass  # already starts with heading, no strip needed
+    else:
+        # last resort — find any heading
+        for prefix in ["## ", "### "]:
+            idx = text.find(prefix)
+            if idx != -1:
+                text = text[idx:].strip()
+                break
+
     return text
