@@ -20,3 +20,11 @@ def load_api_key() -> str | None:
     load_dotenv(dotenv_path=".env.local")
     return os.getenv("API_KEY")
 
+def prompt_for_api_key() -> str:
+    print("\nNo API key found...")
+    print("Get one at: https://aistudio.google.com/api-keys")
+    api_key = input("Enter your Gemini API Key: ").strip()
+    save_api_key(api_key)
+    print("API Key Saved...\n")
+    return api_key
+
