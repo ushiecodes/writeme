@@ -30,3 +30,26 @@ Using both the interview answers AND the codebase above, generate a complete REA
     response = _call_with_retry(client, full_prompt)
     return response
 
+
+def _call_with_retry(client, prompt: str, retries: int = 3) -> str:
+    for attempt in range(retries):
+        try:
+            response = client.models.generate_content(
+                model="gemini-2.5-flash",
+                config={"system_instruction": SYSTEM_PROMPT},
+                contents=prompt
+            )
+            return response.text
+
+        except ClientError as e:
+            if "429" in str(e):
+                wait = 2 ** (attempt + 1)
+                print(f"Rate limited. Waiting {wait} seconds before retry {attempt + 1}/{retries}...")
+                time.sleep(wait)
+                if attempt == retries - 1:
+                    raise RuntimeError(
+                        "Gemini rate limit hit after all retries. "
+                        "Wait a few minutes and try again, or use a different API key."
+                    ) from e
+            else:
+                raise
