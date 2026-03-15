@@ -1,26 +1,32 @@
-import os
 import time
 from google import genai
 from google.genai.errors import ClientError
-from dotenv import load_dotenv
 from prompt import SYSTEM_PROMPT
 from interview import format_answers
 from scanner import scan_codebase, format_codebase_for_prompt
+from config import get_api_key
 
 
-# Load variables from .env.local
-load_dotenv(dotenv_path=".env.local")
+def generate_readme(answers: dict) -> str:
+    api_key = get_api_key()
+    client = genai.Client(api_key=api_key)
 
-# Access API KEY
-API_KEY = os.getenv("API_KEY")
+    print("Scanning codebase...")
+    scan_result = scan_codebase(".")
+    codebase_context = format_codebase_for_prompt(scan_result)
 
-# Parse the API KEY
-client = genai.Client(api_key=API_KEY)
+    formatted_answers = format_answers(answers)
 
-# establish a connection with the model and test if it is working
-response = client.models.generate_content(
-    model="gemini-2.5-flash",
-    contents="say hello, turtell!"
-)
+    full_prompt = f"""
+{formatted_answers}
 
-print(response.text)
+=== ACTUAL CODEBASE ===
+{codebase_context}
+
+Using both the interview answers AND the codebase above, generate a complete README.md following the system instructions exactly.
+"""
+
+    print("Generating README...")
+    response = _call_with_retry(client, full_prompt)
+    return response
+
