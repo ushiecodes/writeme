@@ -1,10 +1,40 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
 [project]
-name = "turtell"
+name = "writeme"
 version = "0.1.0"
-description = "Add your description here"
+description = "AI-powered README generator — interview your project, scan your codebase, generate a complete README"
 readme = "README.md"
-requires-python = ">=3.12.12"
+requires-python = ">=3.12"
+license = "MIT"
+authors = [
+    { name = "Utkarsh Kamat", email = "work.utkarshkamat@gmail.com" }
+]
+keywords = ["readme", "documentation", "ai", "gemini", "cli", "generator"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Documentation",
+    "Topic :: Software Development :: Documentation",
+    "Topic :: Utilities",
+]
 dependencies = [
     "google-genai>=1.67.0",
     "python-dotenv>=1.2.2",
+    "platformdirs>=4.0.0",
 ]
+
+[project.scripts]
+writeme = "cli:main"
+
+[project.urls]
+Homepage = "https://github.com/ushiecodes/writeme"
+Issues = "https://github.com/ushiecodes/writeme/issues"
+
+[tool.setuptools]
+py-modules = ["cli", "config", "gemini", "interview", "prompt", "scanner", "writer"]
