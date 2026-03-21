@@ -127,7 +127,7 @@ PHASE_1_QUESTIONS = [
             "  - Operating system(s) it runs on",
             "  - Package manager used",
         ],
-        "multiline": False,
+        "multiline": True,
         "required": False,
         "rtfm": (
             "List every technology your project uses to run.\n\n"
@@ -297,7 +297,7 @@ PHASE_2A_QUESTIONS = [
             "  - Hardcoded defaults with env override",
             "  - Other — describe",
         ],
-        "multiline": False,
+        "multiline": True,
         "required": False,
         "rtfm": (
             "This tells users HOW to set their config values.\n\n"
@@ -306,6 +306,7 @@ PHASE_2A_QUESTIONS = [
             "  'Shell env vars' → user runs export API_KEY=abc before launching\n"
             "  'Config JSON at ~/.config/app/config.json' → app stores it automatically\n\n"
             "Pick all that apply and describe if using multiple."
+             "Type END when done."
         ),
         
     },
