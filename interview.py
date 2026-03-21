@@ -8,15 +8,15 @@ RTFM_KEYWORD = "RTFM"
 # ---------------------------------------------------------------------------
 
 GENERIC_ANSWERS = {
-    "q1":  "[SKIPPED — infer project purpose, target user, and problem solved from codebase]",
-    "q2":  "[SKIPPED — infer tech stack from pyproject.toml, requirements.txt, or equivalent]",
-    "q3":  "[SKIPPED — infer setup steps from project structure and dependency files]",
-    "q4":  "[SKIPPED — infer expected output from main entry point and codebase]",
-    "q5":  "[SKIPPED — list common setup errors based on the tech stack and dependencies]",
-    "q6":  "[SKIPPED — infer major features from codebase and project structure]",
-    "q7":  "[SKIPPED — infer primary workflow from entry point and module structure]",
-    "q8":  "[SKIPPED — infer user roles or modes from codebase, default to single user if unclear]",
-    "q9":  "[SKIPPED — infer configuration options from codebase and environment variable usage]",
+    "q1": "[SKIPPED — infer project purpose, target user, and problem solved from codebase]",
+    "q2": "[SKIPPED — infer tech stack from pyproject.toml, requirements.txt, or equivalent]",
+    "q3": "[SKIPPED — infer setup steps from project structure and dependency files]",
+    "q4": "[SKIPPED — infer expected output from main entry point and codebase]",
+    "q5": "[SKIPPED — list common setup errors based on the tech stack and dependencies]",
+    "q6": "[SKIPPED — infer major features from codebase and project structure]",
+    "q7": "[SKIPPED — infer primary workflow from entry point and module structure]",
+    "q8": "[SKIPPED — infer user roles or modes from codebase, default to single user if unclear]",
+    "q9": "[SKIPPED — infer configuration options from codebase and environment variable usage]",
     "q9b": "[SKIPPED — infer config loading mechanism from codebase]",
     "q10": "[SKIPPED — infer sensitive config values from variable names and usage patterns]",
     "q11": "[SKIPPED — infer failure behaviour on missing config from codebase]",
@@ -47,15 +47,15 @@ GENERIC_ANSWERS = {
 # ---------------------------------------------------------------------------
 
 ANSWER_LABELS = {
-    "q1":  "Q1. Project description, target user, and problem solved",
-    "q2":  "Q2. Full tech stack",
-    "q3":  "Q3. Terminal session — clean setup to running app",
-    "q4":  "Q4. Successful run output",
-    "q5":  "Q5. Three common setup errors and fixes",
-    "q6":  "Q6. Major features",
-    "q7":  "Q7. Primary workflow",
-    "q8":  "Q8. User roles and modes",
-    "q9":  "Q9. Configuration options",
+    "q1": "Q1. Project description, target user, and problem solved",
+    "q2": "Q2. Full tech stack",
+    "q3": "Q3. Terminal session — clean setup to running app",
+    "q4": "Q4. Successful run output",
+    "q5": "Q5. Three common setup errors and fixes",
+    "q6": "Q6. Major features",
+    "q7": "Q7. Primary workflow",
+    "q8": "Q8. User roles and modes",
+    "q9": "Q9. Configuration options",
     "q9b": "Q9b. Config loading mechanism",
     "q10": "Q10. Sensitive config values and storage",
     "q11": "Q11. Behaviour on missing required config",
@@ -306,9 +306,8 @@ PHASE_2A_QUESTIONS = [
             "  'Shell env vars' → user runs export API_KEY=abc before launching\n"
             "  'Config JSON at ~/.config/app/config.json' → app stores it automatically\n\n"
             "Pick all that apply and describe if using multiple."
-             "Type END when done."
+            "Type END when done."
         ),
-        
     },
     {
         "key": "q10",
@@ -319,6 +318,13 @@ PHASE_2A_QUESTIONS = [
         ],
         "multiline": False,
         "required": False,
+        "rtfm": (
+            "Name every variable that would cause harm if committed to git.\n\n"
+            "Example:\n"
+            "  'API_KEY is sensitive. Stored in ~/.config/writeme/config.json.\n"
+            "   Protected by OS file permissions. Never written to project directory.\n"
+            "   .gitignore prevents .env.local from being committed.'"
+        ),
     },
     {
         "key": "q11",
@@ -424,7 +430,6 @@ PHASE_2B_QUESTIONS = [
             "  'Frontend calls backend via REST API. Backend writes to PostgreSQL.\n"
             "   Background jobs communicate via Redis queue.'"
         ),
-
     },
     {
         "key": "q16",
@@ -727,8 +732,11 @@ PHASE_3C_QUESTIONS = [
 # CORE PRIMITIVES
 # ---------------------------------------------------------------------------
 
+
 def _print_controls():
-    print("  (SKIP to skip entirely, TLDR for generic answer, RTFM for help, QUIT to exit)\n")
+    print(
+        "  (SKIP to skip entirely, TLDR for generic answer, RTFM for help, QUIT to exit)\n"
+    )
 
 
 def _handle_quit(all_answers: dict):
@@ -757,20 +765,20 @@ def _read_single(prompt_key: str, required: bool = False, rtfm: str = "") -> str
 
         if upper == RTFM_KEYWORD:
             if rtfm:
-                print("\n" + "─"*60)
+                print("\n" + "─" * 60)
                 print(rtfm)
-                print("─"*60 + "\n")
+                print("─" * 60 + "\n")
             else:
                 print("  → No additional help available for this question.")
             continue
 
-        if upper ==  SKIP_KEYWORD:
+        if upper == SKIP_KEYWORD:
             if required:
                 print("  → This question is required and cannot be skipped.")
                 continue
             print("  → Question skipped.")
             return SKIP_KEYWORD
-        
+
         if upper == TLDR_KEYWORD:
             if required:
                 print("  → This question is required and cannot be skipped.")
@@ -785,7 +793,9 @@ def _read_single(prompt_key: str, required: bool = False, rtfm: str = "") -> str
 
 
 def _read_multiline(prompt_key: str, required: bool = False, rtfm: str = "") -> str:
-    print("  (Type END on a new line to submit, SKIP to skip, RTFM for help, QUIT to exit)")
+    print(
+        "  (Type END on a new line to submit, SKIP to skip, RTFM for help, QUIT to exit)"
+    )
     while True:
         lines = []
         while True:
@@ -797,9 +807,9 @@ def _read_multiline(prompt_key: str, required: bool = False, rtfm: str = "") -> 
 
             if upper == RTFM_KEYWORD:
                 if rtfm:
-                    print("\n" + "─"*60)
+                    print("\n" + "─" * 60)
                     print(rtfm)
-                    print("─"*60 + "\n")
+                    print("─" * 60 + "\n")
                     print("  (Continue typing your answer, or type END to submit)")
                 else:
                     print("  → No additional help available for this question.")
@@ -808,15 +818,15 @@ def _read_multiline(prompt_key: str, required: bool = False, rtfm: str = "") -> 
             if upper == SKIP_KEYWORD:
                 if required:
                     print("  → This question is required and cannot be skipped.")
-                    lines=[]
+                    lines = []
                     break
                 print("  → Question skipped.")
                 return SKIP_KEYWORD
-            
+
             if upper == TLDR_KEYWORD:
                 if required:
                     print("  → This question is required and cannot be skipped.")
-                    lines=[]
+                    lines = []
                     break
                 print("  → Using generic answer.")
                 return GENERIC_ANSWERS[prompt_key]
@@ -846,6 +856,7 @@ def _read_multiline(prompt_key: str, required: bool = False, rtfm: str = "") -> 
 # Returns None if the user quit with Y.
 # ---------------------------------------------------------------------------
 
+
 def _run_questions(questions: list, all_answers: dict):
     for q in questions:
         while True:
@@ -866,27 +877,31 @@ def _run_questions(questions: list, all_answers: dict):
                 if quit_result is CONTINUE_SENTINEL:
                     continue
                 return quit_result
-            
+
             if result == SKIP_KEYWORD:
+                if "skippable_flag" in q:
+                    all_answers[q["skippable_flag"]] = True
                 break
 
             if "skippable_flag" in q:
                 flag_key = q["skippable_flag"]
-                all_answers[flag_key] = (result == GENERIC_ANSWERS[q["key"]])
+                all_answers[flag_key] = result == GENERIC_ANSWERS[q["key"]]
 
             all_answers[q["key"]] = result
             break
 
     return all_answers
 
+
 # ---------------------------------------------------------------------------
 # PHASE RUNNERS
 # ---------------------------------------------------------------------------
 
+
 def run_phase_one(all_answers: dict):
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("PHASE 1 — Publishable Draft")
-    print("="*60)
+    print("=" * 60)
     _print_controls()
     result = _run_questions(PHASE_1_QUESTIONS, all_answers)
     if result is None:
@@ -896,19 +911,19 @@ def run_phase_one(all_answers: dict):
 
 
 def run_phase_two(all_answers: dict):
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("PHASE 2 — Depth Layer")
     print("Batch A: Usage and Configuration")
-    print("="*60)
+    print("=" * 60)
     _print_controls()
 
     result = _run_questions(PHASE_2A_QUESTIONS, all_answers)
     if result is None:
         return None
 
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("Batch A complete. Moving to Batch B: Architecture.")
-    print("="*60)
+    print("=" * 60)
     _print_controls()
 
     result = _run_questions(PHASE_2B_QUESTIONS, result)
@@ -920,28 +935,28 @@ def run_phase_two(all_answers: dict):
 
 
 def run_phase_three(all_answers: dict):
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("PHASE 3 — Completion Layer")
     print("Group A: Security")
-    print("="*60)
+    print("=" * 60)
     _print_controls()
 
     result = _run_questions(PHASE_3A_QUESTIONS, all_answers)
     if result is None:
         return all_answers
 
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("Group B: Deployment")
-    print("="*60)
+    print("=" * 60)
     _print_controls()
 
     result = _run_questions(PHASE_3B_QUESTIONS, result)
     if result is None:
         return all_answers
 
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("Group C: Changelog and Maintenance")
-    print("="*60)
+    print("=" * 60)
     _print_controls()
 
     result = _run_questions(PHASE_3C_QUESTIONS, result)
@@ -956,6 +971,7 @@ def run_phase_three(all_answers: dict):
 # LAYER PROMPT
 # ---------------------------------------------------------------------------
 
+
 def _ask_layer_prompt() -> str:
     print("\nYour README draft is ready and publishable as-is.")
     print("\nTwo optional depth layers are available:")
@@ -966,7 +982,14 @@ def _ask_layer_prompt() -> str:
 
 
 def _parse_layer_intent(response: str) -> list:
-    depth_keywords = ["more", "both", "everything", "all layers", "complete both", "full"]
+    depth_keywords = [
+        "more",
+        "both",
+        "everything",
+        "all layers",
+        "complete both",
+        "full",
+    ]
     layer2_keywords = ["layer 2", "usage", "architecture", "config", "depth"]
     layer3_keywords = ["layer 3", "security", "deploy", "changelog", "contributing"]
 
@@ -985,6 +1008,7 @@ def _parse_layer_intent(response: str) -> list:
 # INTERVIEW CONTROLLER
 # ---------------------------------------------------------------------------
 
+
 def run_interview() -> dict:
     all_answers = {}
 
@@ -1001,11 +1025,21 @@ def run_interview() -> dict:
     layers = _parse_layer_intent(response)
 
     if not layers:
-        print("Intent unclear. Do you want to add more depth, or is the draft sufficient?")
+        print(
+            "Intent unclear. Do you want to add more depth, or is the draft sufficient?"
+        )
         clarification = input("> ").strip().lower()
-        if clarification == "done" or "no" in clarification or "sufficient" in clarification:
+        if (
+            clarification == "done"
+            or "no" in clarification
+            or "sufficient" in clarification
+        ):
             return all_answers
-        elif "yes" in clarification or "more" in clarification or "depth" in clarification:
+        elif (
+            "yes" in clarification
+            or "more" in clarification
+            or "depth" in clarification
+        ):
             layers = ["layer2", "layer3"]
         else:
             return all_answers
@@ -1037,6 +1071,7 @@ def run_interview() -> dict:
 # FORMAT ANSWERS
 # Converts the answers dict into a labeled string for Gemini
 # ---------------------------------------------------------------------------
+
 
 def format_answers(answers: dict) -> str:
     lines = ["=== DEVELOPER INTERVIEW ANSWERS ===\n"]
