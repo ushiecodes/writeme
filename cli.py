@@ -1,9 +1,18 @@
+import os
 import argparse
 from interview import run_interview
 from gemini import generate_readme
 from writer import write_readme
-from config import get_api_key, reset_api_key
-from display import print_banner, print_success, print_error, print_warning, console
+from config import get_api_key, reset_api_key, load_api_key
+from display import (
+    print_banner,
+    print_info_box,
+    print_success,
+    print_error,
+    print_warning,
+    print_info,
+    console,
+)
 
 
 def main():
@@ -30,16 +39,15 @@ def main():
             console.print("[bold cyan]writeme[/bold cyan] [white]v0.1.0[/white]")
         return
 
-    # print banner
+    # print banner — box 1
     print_banner()
 
-    # confirm API key exists before starting interview
-    get_api_key()
+    # print info box — box 2
+    existing_key = load_api_key()
+    print_info_box(cwd=os.getcwd(), api_key_loaded=bool(existing_key))
 
-    console.print(
-        "\n[dim]This tool will interview you about your project and "
-        "generate a complete README.md in the current directory.[/dim]\n"
-    )
+    # ensure API key is available (prompts if missing)
+    get_api_key()
 
     # run the interview
     answers = run_interview()
@@ -56,4 +64,6 @@ def main():
     write_readme(readme_content)
 
     print_success("Done. Your README is ready.")
+
+
 
