@@ -2,7 +2,7 @@
 
 > WriteMe is an AI-powered CLI tool for developers who want to generate complete, production-grade README files without spending time writing them manually. It solves the problem of projects shipping with poor or missing documentation by interviewing the developer about their project, scanning the codebase, and using Google Gemini to generate a comprehensive README.md automatically.
 
-![Version](https://img.shields.io/badge/version-0.1.0-blue)
+![Version](https://img.shields.io/badge/version-0.1.1-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 ![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20Linux%20%7C%20macOS-lightgrey)
 ![Status](https://img.shields.io/badge/status-Alpha-orange)

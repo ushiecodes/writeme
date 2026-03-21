@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "writeme-ai"
-version = "0.1.0"
+version = "0.1.1"
 description = "AI-powered README generator — interview your project, scan your codebase, generate a complete README"
 readme = "README.md"
 requires-python = ">=3.12"
