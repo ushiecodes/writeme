@@ -14,3 +14,8 @@ wheels/
 .python-version
 uv.lock
 
+# OS / Editors
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
