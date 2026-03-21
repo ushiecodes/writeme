@@ -1,3 +1,15 @@
+from display import (
+    console,
+    print_phase_header,
+    print_controls,
+    print_question,
+    print_rtfm,
+    print_layer_prompt,
+    print_success,
+    print_warning,
+    print_info,
+)
+
 SKIP_KEYWORD = "SKIP"
 QUIT_KEYWORD = "QUIT"
 TLDR_KEYWORD = "TLDR"
@@ -734,11 +746,8 @@ PHASE_3C_QUESTIONS = [
 
 
 def _print_controls():
-    print(
-        "  (SKIP to skip entirely, TLDR for generic answer, RTFM for help, QUIT to exit)\n"
-    )
-
-
+    print_controls()
+    
 def _handle_quit(all_answers: dict):
     print("\nAre you sure you want to quit?")
     print("Your current progress will be used to generate a partial README.")
@@ -765,11 +774,9 @@ def _read_single(prompt_key: str, required: bool = False, rtfm: str = "") -> str
 
         if upper == RTFM_KEYWORD:
             if rtfm:
-                print("\n" + "─" * 60)
-                print(rtfm)
-                print("─" * 60 + "\n")
+                print_rtfm(rtfm)
             else:
-                print("  → No additional help available for this question.")
+                print_info("No additional help available for this question.")
             continue
 
         if upper == SKIP_KEYWORD:
@@ -899,71 +906,57 @@ def _run_questions(questions: list, all_answers: dict):
 
 
 def run_phase_one(all_answers: dict):
-    print("\n" + "="*60)
-    print("PHASE 1 — Publishable Draft")
-    print("="*60)
+    print_phase_header("PHASE 1 — Publishable Draft")
     _print_controls()
     result = _run_questions(PHASE_1_QUESTIONS, all_answers)
     if result is QUIT_SENTINEL:
         return QUIT_SENTINEL
-    print("\nPhase 1 complete.")
+    print_success("Phase 1 complete.")
     return all_answers
 
 
 def run_phase_two(all_answers: dict):
-    print("\n" + "="*60)
-    print("PHASE 2 — Depth Layer")
-    print("Batch A: Usage and Configuration")
-    print("="*60)
+    print_phase_header("PHASE 2 — Depth Layer")
     _print_controls()
 
     result = _run_questions(PHASE_2A_QUESTIONS, all_answers)
     if result is QUIT_SENTINEL:
         return QUIT_SENTINEL
 
-    print("\n" + "="*60)
-    print("Batch A complete. Moving to Batch B: Architecture.")
-    print("="*60)
+    print_phase_header("Batch A complete. Moving to Batch B: Architecture.")
     _print_controls()
 
     result = _run_questions(PHASE_2B_QUESTIONS, all_answers)
     if result is QUIT_SENTINEL:
         return QUIT_SENTINEL
 
-    print("\nPhase 2 complete.")
+    print_success("Phase 2 complete.")
     return all_answers
 
 
 def run_phase_three(all_answers: dict):
-    print("\n" + "="*60)
-    print("PHASE 3 — Completion Layer")
-    print("Group A: Security")
-    print("="*60)
+    print_phase_header("PHASE 3 — Completion Layer")
     _print_controls()
 
     result = _run_questions(PHASE_3A_QUESTIONS, all_answers)
     if result is QUIT_SENTINEL:
         return QUIT_SENTINEL
 
-    print("\n" + "="*60)
-    print("Group B: Deployment")
-    print("="*60)
+    print_phase_header("Group B: Deployment")
     _print_controls()
 
     result = _run_questions(PHASE_3B_QUESTIONS, all_answers)
     if result is QUIT_SENTINEL:
         return QUIT_SENTINEL
 
-    print("\n" + "="*60)
-    print("Group C: Changelog and Maintenance")
-    print("="*60)
+    print_phase_header("Group C: Changelog and Maintenance")
     _print_controls()
 
     result = _run_questions(PHASE_3C_QUESTIONS, all_answers)
     if result is QUIT_SENTINEL:
         return QUIT_SENTINEL
 
-    print("\nPhase 3 complete.")
+    print_success("Phase 3 complete.")
     return all_answers
 
 
@@ -1009,12 +1002,12 @@ def _parse_layer_intent(response: str) -> list:
 # ---------------------------------------------------------------------------
 
 
-def run_interview() -> dict:
+def run_interview() -> dict | None:
     all_answers = {}
 
     result = run_phase_one(all_answers)
     if result is QUIT_SENTINEL:
-        return all_answers  # return whatever was collected before quit
+        return None  # user quit — signal to caller to cancel generation
     all_answers = result
 
     response = _ask_layer_prompt()
@@ -1025,8 +1018,8 @@ def run_interview() -> dict:
     layers = _parse_layer_intent(response)
 
     if not layers:
-        print("Intent unclear. Do you want to add more depth, or is the draft sufficient?")
-        clarification = input("> ").strip().lower()
+        print_info("Intent unclear. Do you want to add more depth, or is the draft sufficient?")
+        clarification = console.input("[bold cyan]>[/bold cyan] ").strip().lower()
         if clarification == "done" or "no" in clarification or "sufficient" in clarification:
             return all_answers
         elif "yes" in clarification or "more" in clarification or "depth" in clarification:
@@ -1037,7 +1030,7 @@ def run_interview() -> dict:
     if "layer2" in layers:
         result = run_phase_two(all_answers)
         if result is QUIT_SENTINEL:
-            return all_answers
+            return None
         all_answers = result
 
         if "layer3" not in layers:
@@ -1051,7 +1044,7 @@ def run_interview() -> dict:
     if "layer3" in layers:
         result = run_phase_three(all_answers)
         if result is QUIT_SENTINEL:
-            return all_answers
+            return None
         all_answers = result
 
     return all_answers

@@ -3,7 +3,7 @@ from interview import run_interview
 from gemini import generate_readme
 from writer import write_readme
 from config import get_api_key, reset_api_key
-from display import print_banner, print_success, print_error, console
+from display import print_banner, print_success, print_error, print_warning, console
 
 
 def main():
@@ -43,6 +43,10 @@ def main():
 
     # run the interview
     answers = run_interview()
+
+    if answers is None:
+        print_warning("Interview cancelled. No README was generated.")
+        return
 
     # generate readme from answers + codebase scan
     console.print("\n[dim]Scanning codebase and generating README...[/dim]")
