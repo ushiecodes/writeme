@@ -728,7 +728,7 @@ PHASE_3C_QUESTIONS = [
 # ---------------------------------------------------------------------------
 
 def _print_controls():
-    print("  (Type SKIP to skip, TLDR for generic answer, RTFM for help, QUIT to exit)\n")
+    print("  (SKIP to skip entirely, TLDR for generic answer, RTFM for help, QUIT to exit)\n")
 
 
 def _handle_quit(all_answers: dict):
@@ -764,7 +764,14 @@ def _read_single(prompt_key: str, required: bool = False, rtfm: str = "") -> str
                 print("  → No additional help available for this question.")
             continue
 
-        if upper in (SKIP_KEYWORD, TLDR_KEYWORD):
+        if upper ==  SKIP_KEYWORD:
+            if required:
+                print("  → This question is required and cannot be skipped.")
+                continue
+            print("  → Question skipped.")
+            return SKIP_KEYWORD
+        
+        if upper == TLDR_KEYWORD:
             if required:
                 print("  → This question is required and cannot be skipped.")
                 continue
@@ -798,10 +805,18 @@ def _read_multiline(prompt_key: str, required: bool = False, rtfm: str = "") -> 
                     print("  → No additional help available for this question.")
                 continue  # do not add RTFM to lines, keep collecting
 
-            if upper in (SKIP_KEYWORD, TLDR_KEYWORD):
+            if upper == SKIP_KEYWORD:
                 if required:
                     print("  → This question is required and cannot be skipped.")
-                    lines = []
+                    lines=[]
+                    break
+                print("  → Question skipped.")
+                return SKIP_KEYWORD
+            
+            if upper == TLDR_KEYWORD:
+                if required:
+                    print("  → This question is required and cannot be skipped.")
+                    lines=[]
                     break
                 print("  → Using generic answer.")
                 return GENERIC_ANSWERS[prompt_key]
@@ -851,6 +866,9 @@ def _run_questions(questions: list, all_answers: dict):
                 if quit_result is CONTINUE_SENTINEL:
                     continue
                 return quit_result
+            
+            if result == SKIP_KEYWORD:
+                break
 
             if "skippable_flag" in q:
                 flag_key = q["skippable_flag"]
@@ -998,13 +1016,13 @@ def run_interview() -> dict:
             return all_answers
         all_answers = result
 
-        response = _ask_layer_prompt()
-        if response == "done":
-            return all_answers
-
-        new_layers = _parse_layer_intent(response)
-        if "layer3" in new_layers:
-            layers.append("layer3")
+        if "layer3" not in layers:
+            response = _ask_layer_prompt()
+            if response == "done":
+                return all_answers
+            new_layers = _parse_layer_intent(response)
+            if "layer3" in new_layers:
+                layers.append("layer3")
 
     if "layer3" in layers:
         result = run_phase_three(all_answers)
