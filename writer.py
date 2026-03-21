@@ -38,19 +38,12 @@ def _clean_output(text: str) -> str:
     if text.endswith("```"):
         text = text[:-3].strip()
 
-    # strip everything before the first markdown heading
-    # audit reports, preamble, and security questions appear before the README
-    heading_index = text.find("\n# ")
-    if heading_index != -1:
-        text = text[heading_index:].strip()
-    elif text.startswith("# "):
-        pass  # already starts with heading, no strip needed
-    else:
-        # last resort — find any heading
-        for prefix in ["## ", "### "]:
-            idx = text.find(prefix)
-            if idx != -1:
-                text = text[idx:].strip()
-                break
+    # strip everything before the first top-level heading
+    # only match # at the very start of a line, not inside code blocks
+    lines = text.split("\n")
+    for i, line in enumerate(lines):
+        if line.startswith("# "):
+            text = "\n".join(lines[i:])
+            return text.strip()
 
-    return text
+    return text.strip()
