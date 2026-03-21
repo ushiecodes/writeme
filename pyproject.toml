@@ -28,6 +28,9 @@ dependencies = [
     "python-dotenv>=1.2.2",
     "platformdirs>=4.0.0",
     "rich>=14.3.3",
+    "pip-audit>=2.10.0",
+    "pyasn1>=0.6.2",
+    "pathspec>=1.0.4",
 ]
 
 [project.scripts]
@@ -39,3 +42,8 @@ Issues = "https://github.com/ushiecodes/writeme/issues"
 
 [tool.setuptools]
 py-modules = ["cli", "config", "display", "gemini", "interview", "prompt", "scanner", "writer"]
+
+[dependency-groups]
+dev = [
+    "build>=1.4.0",
+]
