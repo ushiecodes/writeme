@@ -1,7 +1,6 @@
 from display import (
     console,
-    print_phase_header,
-    print_controls,
+    print_phase_controls,
     print_question,
     print_rtfm,
     print_layer_prompt,
@@ -9,7 +8,6 @@ from display import (
     print_warning,
     print_info,
 )
-
 SKIP_KEYWORD = "SKIP"
 QUIT_KEYWORD = "QUIT"
 TLDR_KEYWORD = "TLDR"
@@ -743,10 +741,6 @@ PHASE_3C_QUESTIONS = [
 # ---------------------------------------------------------------------------
 # CORE PRIMITIVES
 # ---------------------------------------------------------------------------
-
-
-def _print_controls():
-    print_controls()
     
 def _handle_quit(all_answers: dict):
     print("\nAre you sure you want to quit?")
@@ -814,13 +808,10 @@ def _read_multiline(prompt_key: str, required: bool = False, rtfm: str = "") -> 
 
             if upper == RTFM_KEYWORD:
                 if rtfm:
-                    print("\n" + "─" * 60)
-                    print(rtfm)
-                    print("─" * 60 + "\n")
-                    print("  (Continue typing your answer, or type END to submit)")
+                    print_rtfm(rtfm)
                 else:
-                    print("  → No additional help available for this question.")
-                continue  # do not add RTFM to lines, keep collecting
+                    print_info("No additional help available for this question.")
+                continue
 
             if upper == SKIP_KEYWORD:
                 if required:
@@ -906,8 +897,7 @@ def _run_questions(questions: list, all_answers: dict):
 
 
 def run_phase_one(all_answers: dict):
-    print_phase_header("PHASE 1 — Publishable Draft")
-    _print_controls()
+    print_phase_controls("PHASE 1 — Publishable Draft")
     result = _run_questions(PHASE_1_QUESTIONS, all_answers)
     if result is QUIT_SENTINEL:
         return QUIT_SENTINEL
@@ -916,15 +906,13 @@ def run_phase_one(all_answers: dict):
 
 
 def run_phase_two(all_answers: dict):
-    print_phase_header("PHASE 2 — Depth Layer")
-    _print_controls()
+    print_phase_controls("PHASE 2 — Depth Layer  |  Batch A: Usage and Configuration")
 
     result = _run_questions(PHASE_2A_QUESTIONS, all_answers)
     if result is QUIT_SENTINEL:
         return QUIT_SENTINEL
 
-    print_phase_header("Batch A complete. Moving to Batch B: Architecture.")
-    _print_controls()
+    print_phase_controls("Batch A complete. Moving to Batch B: Architecture.")
 
     result = _run_questions(PHASE_2B_QUESTIONS, all_answers)
     if result is QUIT_SENTINEL:
@@ -935,22 +923,19 @@ def run_phase_two(all_answers: dict):
 
 
 def run_phase_three(all_answers: dict):
-    print_phase_header("PHASE 3 — Completion Layer")
-    _print_controls()
+    print_phase_controls("PHASE 3 — Completion Layer  |  Group A: Security")
 
     result = _run_questions(PHASE_3A_QUESTIONS, all_answers)
     if result is QUIT_SENTINEL:
         return QUIT_SENTINEL
 
-    print_phase_header("Group B: Deployment")
-    _print_controls()
+    print_phase_controls("Group B: Deployment")
 
     result = _run_questions(PHASE_3B_QUESTIONS, all_answers)
     if result is QUIT_SENTINEL:
         return QUIT_SENTINEL
 
-    print_phase_header("Group C: Changelog and Maintenance")
-    _print_controls()
+    print_phase_controls("Group C: Changelog and Maintenance")
 
     result = _run_questions(PHASE_3C_QUESTIONS, all_answers)
     if result is QUIT_SENTINEL:
@@ -966,12 +951,8 @@ def run_phase_three(all_answers: dict):
 
 
 def _ask_layer_prompt() -> str:
-    print("\nYour README draft is ready and publishable as-is.")
-    print("\nTwo optional depth layers are available:")
-    print("  Layer 2 — usage guide, configuration reference, architecture")
-    print("  Layer 3 — security, deployment, changelog, contributing guide")
-    print("\nType 'more' for both, 'layer 2', 'layer 3', or 'done' to finish.")
-    return input("> ").strip().lower()
+    print_layer_prompt()
+    return console.input("[bold cyan]>[/bold cyan] ").strip().lower()
 
 
 def _parse_layer_intent(response: str) -> list:
