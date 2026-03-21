@@ -27,6 +27,7 @@ dependencies = [
     "google-genai>=1.67.0",
     "python-dotenv>=1.2.2",
     "platformdirs>=4.0.0",
+    "rich>=14.3.3",
 ]
 
 [project.scripts]
@@ -37,4 +38,4 @@ Homepage = "https://github.com/ushiecodes/writeme"
 Issues = "https://github.com/ushiecodes/writeme/issues"
 
 [tool.setuptools]
-py-modules = ["cli", "config", "gemini", "interview", "prompt", "scanner", "writer"]
+py-modules = ["cli", "config", "display", "gemini", "interview", "prompt", "scanner", "writer"]
