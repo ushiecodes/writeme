@@ -1,7 +1,6 @@
 from display import (
     console,
     print_phase_controls,
-    print_question,
     print_rtfm,
     print_layer_prompt,
     print_success,
@@ -743,10 +742,10 @@ PHASE_3C_QUESTIONS = [
 # ---------------------------------------------------------------------------
     
 def _handle_quit(all_answers: dict):
-    print("\nAre you sure you want to quit?")
-    print("Your current progress will be used to generate a partial README.")
-    print("[Y] Quit and generate with current answers")
-    print("[N] Continue the questionnaire")
+    console.print("\n[bold white]Are you sure you want to quit?[/bold white]")
+    console.print("[dim]Your current progress will be used to generate a partial README.[/dim]")
+    console.print("[bold cyan]Y[/bold cyan][dim] — Quit and generate with current answers[/dim]")
+    console.print("[bold cyan]N[/bold cyan][dim] — Continue the questionnaire[/dim]")
     choice = input("> ").strip().upper()
     if choice == "Y":
         return QUIT_SENTINEL
@@ -759,9 +758,9 @@ def _read_single(prompt_key: str, required: bool = False, rtfm: str = "") -> str
 
         if not response:
             if required:
-                print("  → This question is required. Please provide an answer.")
+                print_warning("  → This question is required. Please provide an answer.")
                 continue
-            print("  → Empty answer. Using generic answer.")
+            print_info("  → Empty answer. Using generic answer.")
             return GENERIC_ANSWERS[prompt_key]
 
         upper = response.upper()
@@ -775,16 +774,16 @@ def _read_single(prompt_key: str, required: bool = False, rtfm: str = "") -> str
 
         if upper == SKIP_KEYWORD:
             if required:
-                print("  → This question is required and cannot be skipped.")
+                print_warning("  → This question is required and cannot be skipped.")
                 continue
-            print("  → Question skipped.")
+            print_info("  → Question skipped.")
             return SKIP_KEYWORD
 
         if upper == TLDR_KEYWORD:
             if required:
-                print("  → This question is required and cannot be skipped.")
+                print_warning("  → This question is required and cannot be skipped.")
                 continue
-            print("  → Using generic answer.")
+            print_info("  → Using generic answer.")
             return GENERIC_ANSWERS[prompt_key]
 
         if upper == QUIT_KEYWORD:
@@ -794,9 +793,7 @@ def _read_single(prompt_key: str, required: bool = False, rtfm: str = "") -> str
 
 
 def _read_multiline(prompt_key: str, required: bool = False, rtfm: str = "") -> str:
-    print(
-        "  (Type END on a new line to submit, SKIP to skip, RTFM for help, QUIT to exit)"
-    )
+    print_info("  (Type END on a new line to submit, SKIP to skip, RTFM for help, QUIT to exit)")
     while True:
         lines = []
         while True:
@@ -815,18 +812,18 @@ def _read_multiline(prompt_key: str, required: bool = False, rtfm: str = "") -> 
 
             if upper == SKIP_KEYWORD:
                 if required:
-                    print("  → This question is required and cannot be skipped.")
+                    print_warning("  → This question is required and cannot be skipped.")
                     lines = []
                     break
-                print("  → Question skipped.")
+                print_info("  → Question skipped.")
                 return SKIP_KEYWORD
 
             if upper == TLDR_KEYWORD:
                 if required:
-                    print("  → This question is required and cannot be skipped.")
+                    print_warning("  → This question is required and cannot be skipped.")
                     lines = []
                     break
-                print("  → Using generic answer.")
+                print_info("  → Using generic answer.")
                 return GENERIC_ANSWERS[prompt_key]
 
             if upper == QUIT_KEYWORD:
@@ -838,10 +835,10 @@ def _read_multiline(prompt_key: str, required: bool = False, rtfm: str = "") -> 
 
         if not result:
             if required:
-                print("  → This question is required. Please provide an answer.")
-                print("  (Type END on a new line to submit)")
+                print_warning("  → This question is required. Please provide an answer.")
+                print_info("  (Type END on a new line to submit)")
                 continue
-            print("  → Empty answer. Using generic answer.")
+            print_info("  → Empty answer. Using generic answer.")
             return GENERIC_ANSWERS[prompt_key]
 
         return result
@@ -858,9 +855,9 @@ def _read_multiline(prompt_key: str, required: bool = False, rtfm: str = "") -> 
 def _run_questions(questions: list, all_answers: dict):
     for q in questions:
         while True:
-            print(f"\n{q['text']}")
+            console.print(f"\n[bold white]{q['text']}[/bold white]")
             for hint in q.get("hints", []):
-                print(hint)
+                console.print(f"[dim]{hint}[/dim]")
 
             required = q.get("required", False)
             rtfm = q.get("rtfm", "")
@@ -875,8 +872,8 @@ def _run_questions(questions: list, all_answers: dict):
                 if quit_result is CONTINUE_SENTINEL:
                     continue
                 if quit_result is QUIT_SENTINEL:
-                    return QUIT_SENTINEL  # propagate up cleanly
-            
+                    return QUIT_SENTINEL
+
             if result == SKIP_KEYWORD:
                 if "skippable_flag" in q:
                     all_answers[q["skippable_flag"]] = True
