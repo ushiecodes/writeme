@@ -8,9 +8,7 @@ from display import (
     print_banner,
     print_info_box,
     print_success,
-    print_error,
     print_warning,
-    print_info,
     console,
 )
 
@@ -66,4 +64,5 @@ def main():
     print_success("Done. Your README is ready.")
 
 
-
+if __name__ == "__main__":
+    main()

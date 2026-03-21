@@ -46,4 +46,6 @@ py-modules = ["cli", "config", "display", "gemini", "interview", "prompt", "scan
 [dependency-groups]
 dev = [
     "build>=1.4.0",
+    "ruff>=0.15.7",
+    "twine>=6.2.0",
 ]
