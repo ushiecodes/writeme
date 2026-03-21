@@ -85,7 +85,7 @@ ANSWER_LABELS = {
 # ---------------------------------------------------------------------------
 
 CONTINUE_SENTINEL = object()
-
+QUIT_SENTINEL = object()
 # ---------------------------------------------------------------------------
 # QUESTION BANK
 # Each question is a dict with these fields:
@@ -746,7 +746,7 @@ def _handle_quit(all_answers: dict):
     print("[N] Continue the questionnaire")
     choice = input("> ").strip().upper()
     if choice == "Y":
-        return all_answers
+        return QUIT_SENTINEL
     return CONTINUE_SENTINEL
 
 
@@ -876,16 +876,16 @@ def _run_questions(questions: list, all_answers: dict):
                 quit_result = _handle_quit(all_answers)
                 if quit_result is CONTINUE_SENTINEL:
                     continue
-                return quit_result
-
+                if quit_result is QUIT_SENTINEL:
+                    return QUIT_SENTINEL  # propagate up cleanly
+            
             if result == SKIP_KEYWORD:
                 if "skippable_flag" in q:
                     all_answers[q["skippable_flag"]] = True
                 break
 
             if "skippable_flag" in q:
-                flag_key = q["skippable_flag"]
-                all_answers[flag_key] = result == GENERIC_ANSWERS[q["key"]]
+                all_answers[q["skippable_flag"]] = (result == GENERIC_ANSWERS[q["key"]])
 
             all_answers[q["key"]] = result
             break
@@ -899,72 +899,72 @@ def _run_questions(questions: list, all_answers: dict):
 
 
 def run_phase_one(all_answers: dict):
-    print("\n" + "=" * 60)
+    print("\n" + "="*60)
     print("PHASE 1 — Publishable Draft")
-    print("=" * 60)
+    print("="*60)
     _print_controls()
     result = _run_questions(PHASE_1_QUESTIONS, all_answers)
-    if result is None:
-        return None
+    if result is QUIT_SENTINEL:
+        return QUIT_SENTINEL
     print("\nPhase 1 complete.")
-    return result
+    return all_answers
 
 
 def run_phase_two(all_answers: dict):
-    print("\n" + "=" * 60)
+    print("\n" + "="*60)
     print("PHASE 2 — Depth Layer")
     print("Batch A: Usage and Configuration")
-    print("=" * 60)
+    print("="*60)
     _print_controls()
 
     result = _run_questions(PHASE_2A_QUESTIONS, all_answers)
-    if result is None:
-        return None
+    if result is QUIT_SENTINEL:
+        return QUIT_SENTINEL
 
-    print("\n" + "=" * 60)
+    print("\n" + "="*60)
     print("Batch A complete. Moving to Batch B: Architecture.")
-    print("=" * 60)
+    print("="*60)
     _print_controls()
 
-    result = _run_questions(PHASE_2B_QUESTIONS, result)
-    if result is None:
-        return None
+    result = _run_questions(PHASE_2B_QUESTIONS, all_answers)
+    if result is QUIT_SENTINEL:
+        return QUIT_SENTINEL
 
     print("\nPhase 2 complete.")
-    return result
+    return all_answers
 
 
 def run_phase_three(all_answers: dict):
-    print("\n" + "=" * 60)
+    print("\n" + "="*60)
     print("PHASE 3 — Completion Layer")
     print("Group A: Security")
-    print("=" * 60)
+    print("="*60)
     _print_controls()
 
     result = _run_questions(PHASE_3A_QUESTIONS, all_answers)
-    if result is None:
-        return all_answers
+    if result is QUIT_SENTINEL:
+        return QUIT_SENTINEL
 
-    print("\n" + "=" * 60)
+    print("\n" + "="*60)
     print("Group B: Deployment")
-    print("=" * 60)
+    print("="*60)
     _print_controls()
 
-    result = _run_questions(PHASE_3B_QUESTIONS, result)
-    if result is None:
-        return all_answers
+    result = _run_questions(PHASE_3B_QUESTIONS, all_answers)
+    if result is QUIT_SENTINEL:
+        return QUIT_SENTINEL
 
-    print("\n" + "=" * 60)
+    print("\n" + "="*60)
     print("Group C: Changelog and Maintenance")
-    print("=" * 60)
+    print("="*60)
     _print_controls()
 
-    result = _run_questions(PHASE_3C_QUESTIONS, result)
-    if result is None:
-        return all_answers
+    result = _run_questions(PHASE_3C_QUESTIONS, all_answers)
+    if result is QUIT_SENTINEL:
+        return QUIT_SENTINEL
 
     print("\nPhase 3 complete.")
-    return result
+    return all_answers
 
 
 # ---------------------------------------------------------------------------
@@ -1013,8 +1013,8 @@ def run_interview() -> dict:
     all_answers = {}
 
     result = run_phase_one(all_answers)
-    if result is None:
-        return all_answers
+    if result is QUIT_SENTINEL:
+        return all_answers  # return whatever was collected before quit
     all_answers = result
 
     response = _ask_layer_prompt()
@@ -1025,28 +1025,18 @@ def run_interview() -> dict:
     layers = _parse_layer_intent(response)
 
     if not layers:
-        print(
-            "Intent unclear. Do you want to add more depth, or is the draft sufficient?"
-        )
+        print("Intent unclear. Do you want to add more depth, or is the draft sufficient?")
         clarification = input("> ").strip().lower()
-        if (
-            clarification == "done"
-            or "no" in clarification
-            or "sufficient" in clarification
-        ):
+        if clarification == "done" or "no" in clarification or "sufficient" in clarification:
             return all_answers
-        elif (
-            "yes" in clarification
-            or "more" in clarification
-            or "depth" in clarification
-        ):
+        elif "yes" in clarification or "more" in clarification or "depth" in clarification:
             layers = ["layer2", "layer3"]
         else:
             return all_answers
 
     if "layer2" in layers:
         result = run_phase_two(all_answers)
-        if result is None:
+        if result is QUIT_SENTINEL:
             return all_answers
         all_answers = result
 
@@ -1060,7 +1050,7 @@ def run_interview() -> dict:
 
     if "layer3" in layers:
         result = run_phase_three(all_answers)
-        if result is None:
+        if result is QUIT_SENTINEL:
             return all_answers
         all_answers = result
 
