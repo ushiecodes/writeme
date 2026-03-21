@@ -2,6 +2,7 @@ import os
 import json
 from pathlib import Path
 from dotenv import load_dotenv
+from display import print_info, print_success
 
 CONFIG_DIR = Path.home() / ".config" / "writeme"
 CONFIG_FILE = CONFIG_DIR / "config.json"
@@ -21,11 +22,11 @@ def load_api_key() -> str | None:
     return os.getenv("API_KEY")
 
 def prompt_for_api_key() -> str:
-    print("\nNo API key found...")
-    print("Get one at: https://aistudio.google.com/api-keys")
+    print_info("No API key found...")
+    print_info("Get one at: https://aistudio.google.com/api-keys")
     api_key = input("Enter your Gemini API Key: ").strip()
     save_api_key(api_key)
-    print("API Key Saved...\n")
+    print_success("API Key Saved...")
     return api_key
 
 def get_api_key() -> str:
@@ -37,6 +38,6 @@ def get_api_key() -> str:
 def reset_api_key() -> None:
     if CONFIG_FILE.exists():
         CONFIG_FILE.unlink()
-        print("API Key was removed...")
+        print_success("API Key was removed...")
     else:
-        print("No saved API Key was found...")
+        print_info("No saved API Key was found...")
