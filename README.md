@@ -33,7 +33,7 @@ WriteMe provides a comprehensive solution for generating high-quality READMEs fo
 To run WriteMe, ensure you have:
 
 *   **Python 3.12+**
-*   The following Python packages (automatically installed via `pip install writeme`):
+*   The following Python packages (automatically installed via `pip install writeme-ai`):
     *   `google-genai>=1.67.0`
     *   `python-dotenv>=1.2.2`
     *   `platformdirs>=4.0.0`
@@ -41,6 +41,17 @@ To run WriteMe, ensure you have:
     *   `pip-audit>=2.10.0`
     *   `pyasn1>=0.6.3`
     *   `pathspec>=1.0.4`
+
+## Quick Start
+
+1. Install the project dependencies using pip:
+    ```bash
+    pip install writeme-ai
+    ```
+2. Run the WriteMe CLI tool. On the first run, you will be prompted to enter your Google Gemini API key.
+    ```bash
+    writeme
+    ```
 
 ## Setup
 
@@ -56,7 +67,7 @@ Follow these steps to get WriteMe up and running from a clean slate:
     ```
 3.  Install the project dependencies using pip:
     ```bash
-    pip install writeme
+    pip install writeme-ai
     ```
 4.  Run the WriteMe CLI tool. On the first run, you will be prompted to enter your Google Gemini API key.
     ```bash
@@ -249,11 +260,10 @@ writeme Dependency not found on PyPI and could not be audited: writeme (0.1.0)
 *   The Gemini API key is stored in plaintext JSON at `~/.config/writeme/config.json`. Its security relies on the operating system's file permissions for the user's home directory.
 *   The tool reads the entire project codebase and sends it to the Google Gemini API. **Do not run this tool on codebases containing sensitive data** beyond what is already covered by the sensitive file filters (e.g., highly confidential algorithms, proprietary business logic that cannot leave the local machine without approval).
 *   The sensitive file scanner covers common patterns but is not exhaustive. Users should **verify their `.gitignore` file and scanner configurations cover all sensitive files** before running WriteMe on projects containing highly sensitive data.
-*   One known vulnerability exists in a transitive dependency: `pyasn1 0.6.2` (`CVE-2026-30922`). This is addressed by upgrading `pyasn1` to version `0.6.3` or higher, which is captured in the changelog.
 
 ## Deployment
 
-WriteMe is a local-only CLI tool. It is not containerized, and there are no differences between local development and production environments. Users install it via `pip install writeme` and run `writeme` in their project directory. No production-specific setup steps are required beyond the initial installation.
+WriteMe is a local-only CLI tool. It is not containerized, and there are no differences between local development and production environments. Users install it via `pip install writeme-ai` and run `writeme` in their project directory. No production-specific setup steps are required beyond the initial installation.
 
 ## Troubleshooting
 
@@ -261,7 +271,7 @@ WriteMe is a local-only CLI tool. It is not containerized, and there are no diff
 **Cause:** Required Python dependencies, specifically the `google-genai` library, are not installed or are not accessible in your Python environment.
 **Fix:**
 ```bash
-pip install writeme
+pip install writeme-ai
 ```
 
 ### `google.genai.errors.ClientError: 429 RESOURCE_EXHAUSTED`
