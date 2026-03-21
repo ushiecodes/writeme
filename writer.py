@@ -1,5 +1,5 @@
 from pathlib import Path
-
+from display import print_info, print_success, print_warning
 
 def write_readme(content: str, directory: str = ".") -> None:
     readme_path = Path(directory) / "README.md"
@@ -8,24 +8,24 @@ def write_readme(content: str, directory: str = ".") -> None:
     content = _clean_output(content)
 
     if readme_path.exists():
-        print(f"\nA README.md already exists in {Path(directory).resolve()}")
-        print("[O]verwrite   [A]ppend   [C]ancel")
+        print_info(f"\nA README.md already exists in {Path(directory).resolve()}")
+        print_info("[O]verwrite   [A]ppend   [C]ancel")
         choice = input("> ").strip().lower()
 
         if choice == "o":
             readme_path.write_text(content, encoding="utf-8")
-            print("README.md overwritten.")
+            print_success("README.md overwritten.")
         elif choice == "a":
             existing = readme_path.read_text(encoding="utf-8")
             readme_path.write_text(existing + "\n\n" + content, encoding="utf-8")
-            print("README.md updated.")
+            print_success("README.md updated.")
         elif choice == "c":
-            print("Cancelled. README.md was not modified.")
+            print_warning("Cancelled. README.md was not modified.")
         else:
-            print("Invalid choice. README.md was not modified.")
+            print_warning("Invalid choice. README.md was not modified.")
     else:
         readme_path.write_text(content, encoding="utf-8")
-        print(f"\nREADME.md created at {readme_path.resolve()}")
+        print_success(f"\nREADME.md created at {readme_path.resolve()}")
 
 def _clean_output(text: str) -> str:
     text = text.strip()
