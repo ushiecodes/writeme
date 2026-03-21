@@ -29,7 +29,7 @@ dependencies = [
     "platformdirs>=4.0.0",
     "rich>=14.3.3",
     "pip-audit>=2.10.0",
-    "pyasn1>=0.6.2",
+    "pyasn1>=0.6.3",
     "pathspec>=1.0.4",
 ]
 
