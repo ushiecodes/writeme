@@ -109,24 +109,22 @@ IGNORED_EXTENSIONS = {
     ".gz", ".lock", ".bin"
 }
 
-MAX_FILE_SIZE_KB = 100  # skip files larger than this
+MAX_FILE_SIZE_KB = 500  # skip files larger than this
+MAX_TOTAL_CHARS = 400_000
 
+PRIORITY_FILES = {
+    "main.py", "cli.py", "app.py", "index.py",
+    "pyproject.toml", "setup.py", "requirements.txt",
+    "Dockerfile", "docker-compose.yml", ".gitignore"
+}
 
 def scan_codebase(root: str = ".") -> dict:
-    """
-    Walks the project directory and returns:
-    - file tree (structure)
-    - content of each readable source file
-    """
     tree = []
     files = {}
     root_path = Path(root).resolve()
 
     for dirpath, dirnames, filenames in os.walk(root_path):
-        # remove ignored dirs in-place so os.walk skips them
         dirnames[:] = [d for d in dirnames if d not in IGNORED_DIRS]
-
-        rel_dir = Path(dirpath).relative_to(root_path)
 
         for filename in filenames:
             filepath = Path(dirpath) / filename
@@ -140,6 +138,14 @@ def scan_codebase(root: str = ".") -> dict:
             if filepath.stat().st_size > MAX_FILE_SIZE_KB * 1024:
                 continue
 
+            # skip sensitive files silently
+            if (
+                filepath.name in IGNORED_FILES
+                or filepath.suffix in IGNORED_SUFFIXES
+                or any(filepath.name.startswith(p) for p in IGNORED_PREFIXES)
+            ):
+                continue
+
             tree.append(rel_path)
 
             try:
@@ -148,15 +154,17 @@ def scan_codebase(root: str = ".") -> dict:
             except Exception:
                 files[rel_path] = "[unreadable]"
 
-    return {
-        "tree": tree,
-        "files": files
-    }
+    # sort so priority files are included first within token budget
+    files = dict(
+        sorted(
+            files.items(),
+            key=lambda x: (0 if Path(x[0]).name in PRIORITY_FILES else 1, x[0])
+        )
+    )
+
+    return {"tree": tree, "files": files}
 
 def format_codebase_for_prompt(scan_result: dict) -> str:
-    """
-    Converts scan result into a structured string to inject into the Gemini prompt.
-    """
     lines = []
 
     lines.append("=== PROJECT FILE TREE ===")
@@ -164,8 +172,19 @@ def format_codebase_for_prompt(scan_result: dict) -> str:
         lines.append(f"  {path}")
 
     lines.append("\n=== FILE CONTENTS ===")
+
+    total_chars = sum(len(line) for line in lines)
+
     for path, content in scan_result["files"].items():
-        lines.append(f"\n--- {path} ---")
-        lines.append(content)
+        entry = f"\n--- {path} ---\n{content}"
+
+        if total_chars + len(entry) > MAX_TOTAL_CHARS:
+            truncated = f"\n--- {path} ---\n[TRUNCATED — file exceeds context budget]"
+            lines.append(truncated)
+            total_chars += len(truncated)
+            continue
+
+        lines.append(entry)
+        total_chars += len(entry)
 
     return "\n".join(lines)
