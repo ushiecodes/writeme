@@ -7,18 +7,18 @@ from display import print_info, print_success
 CONFIG_DIR = Path.home() / ".config" / "writeme"
 CONFIG_FILE = CONFIG_DIR / "config.json"
 
+load_dotenv(dotenv_path=".env.local")  # always load, not conditionally
+
 def save_api_key(api_key: str) -> None:
     CONFIG_DIR.mkdir(parents=True, exist_ok=True)
     with open(CONFIG_FILE, "w") as f:
-        json.dump({"api.key": api_key}, f)
+        json.dump({"api_key": api_key}, f)  # fixed: was "api.key"
 
 def load_api_key() -> str | None:
     if CONFIG_FILE.exists():
         with open(CONFIG_FILE) as f:
             data = json.load(f)
-            return data.get("api_key")
-    
-    load_dotenv(dotenv_path=".env.local")
+            return data.get("api_key")  # now matches save
     return os.getenv("API_KEY")
 
 def prompt_for_api_key() -> str:
@@ -38,6 +38,6 @@ def get_api_key() -> str:
 def reset_api_key() -> None:
     if CONFIG_FILE.exists():
         CONFIG_FILE.unlink()
-        print_success("API Key was removed...")
+        print_success("API key removed.")
     else:
-        print_info("No saved API Key was found...")
+        print_info("No saved API key was found.")

@@ -17,9 +17,9 @@ ASCII_LOGO = """
  """
 
 TAGLINE = "AI-powered README generator"
-VERSION = "v0.1.0"
+VERSION = "v0.1.2"
 AUTHOR = "ushiecodes"
-GITHUB = "https://github.com/ushiecodes/writeme"
+GITHUB = "https://github.com/ushiecodes/writeme.git"
 
 
 def print_banner():
