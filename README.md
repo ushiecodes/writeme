@@ -105,7 +105,7 @@ WriteMe uses the following configuration options:
 | Variable           | Purpose                                                 | Default          | Valid Values                                      | Required |
 | :----------------- | :------------------------------------------------------ | :--------------- | :------------------------------------------------ | :------- |
 | `API_KEY`          | 🔑 Gemini API key used to authenticate requests         | `none`           | any valid Gemini API key string                   | required |
-| `MODEL`            | Gemini model used for generation                        | `gemini-2.5-flash` | any model returned by `client.models.list()`      | optional |
+| `MODEL`            | Gemini model used for generation                        | `gemini-3.5-flash` | any model returned by `client.models.list()`      | optional |
 | `MAX_FILE_SIZE_KB` | maximum size of a single file the scanner will read     | `150`            | any positive integer                              | optional |
 | `MAX_TOTAL_CHARS`  | maximum total characters sent to Gemini from codebase scan | `400000`         | any positive integer                              | optional |
 

@@ -1,6 +1,8 @@
+import os
 import time
 from google import genai
-from google.genai.errors import ClientError
+from google.genai import types
+from google.genai.errors import APIError
 from prompt import SYSTEM_PROMPT
 from interview import format_answers
 from scanner import scan_codebase, format_codebase_for_prompt
@@ -9,7 +11,10 @@ from display import print_info, print_warning
 
 def generate_readme(answers: dict) -> str:
     api_key = get_api_key()
-    client = genai.Client(api_key=api_key)
+    client = genai.Client(
+        api_key=api_key,
+        http_options=types.HttpOptions(api_version="v1beta"),
+    )
 
     print_info("Scanning codebase...")
     scan_result = scan_codebase(".")
@@ -35,21 +40,32 @@ def _call_with_retry(client, prompt: str, retries: int = 3) -> str:
     for attempt in range(retries):
         try:
             response = client.models.generate_content(
-                model="gemini-2.5-flash",
+                model=os.getenv("MODEL", "gemini-2.5-flash"),
                 config={"system_instruction": SYSTEM_PROMPT},
                 contents=prompt
             )
             return response.text
 
-        except ClientError as e:
-            if "429" in str(e):
-                wait = 2 ** (attempt + 1)
-                print_warning(f"Rate limited. Waiting {wait}s seconds before retry {attempt + 1}/{retries}...")
-                time.sleep(wait)
-                if attempt == retries - 1:
-                    raise RuntimeError(
+        except APIError as e:
+            if e.code not in (429, 503):
+                raise
+
+            if attempt == retries - 1:
+                if e.code == 429:
+                    message = (
                         "Gemini rate limit hit after all retries. "
                         "Wait a few minutes and try again, or use a different API key."
-                    ) from e
-            else:
-                raise
+                    )
+                else:
+                    message = (
+                        "Gemini remained unavailable after all retries. "
+                        "Wait a few minutes and try again."
+                    )
+                raise RuntimeError(message) from e
+
+            wait = 2 ** (attempt + 1)
+            print_warning(
+                f"Gemini returned {e.code}. Waiting {wait}s before retry "
+                f"{attempt + 1}/{retries}..."
+            )
+            time.sleep(wait)
